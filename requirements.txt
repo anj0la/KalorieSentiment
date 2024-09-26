@@ -1,0 +1,14 @@
+label-studio
+torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+nltk
+numpy
+torch
+pandas
+scikit-learn
+python-dotenv
+pytest
+wheel
+emoji
+setuptools
+hatchling
+hatch

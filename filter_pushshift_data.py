@@ -164,7 +164,7 @@ def process_comments_from_folder(folder_path: str) -> list[dict]:
 def decompress_zst_files(dir_path: str, output_path: str, extension: str = '.zst') -> None:
     """
     Extracts all zip files in the specified folder path into the output path.
-    If the outpout path does not exist, the directory is made.
+    If the output path does not exist, the directory is made.
 
     Args:
         dir_path (str): The path of the folder containing the zipped files.
