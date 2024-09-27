@@ -97,14 +97,8 @@ def process_comments_from_file(file_path: str, bot_author: str='AutoModerator') 
                 # Skip bot-generated comments
                 if data['author'] != bot_author and 'daily threads' not in comment.lower():
                     comment_parts = split_on_newlines(comment)
-                    # Check if comment is split into parts
-                    if len(comment_parts) == 1:
-                        # If only one part, add it without an index
-                        comments_list.append({'id': data['id'], 'comment': comment_parts[0]})
-                    else:
-                        # If split into parts, add index to each part
-                        for idx, part in enumerate(comment_parts, start=1):
-                            comments_list.append({'id': f"{data['id']}-{idx}", 'comment': part})
+                    for part in comment_parts:
+                            comments_list.append({'comment': part})
             except json.JSONDecodeError:
                 print(f'Error decoding JSON in file: {file_path}')
                 
