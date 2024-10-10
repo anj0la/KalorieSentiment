@@ -12,3 +12,4 @@ emoji
 setuptools
 hatchling
 hatch
+zstandard

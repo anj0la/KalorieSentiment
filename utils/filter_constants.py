@@ -1,4 +1,4 @@
-DOMAIN_KEYWORDS = ('app', 'mfp', 'myfitnesspal', 'loseit', 'cronometer', 'macrofactor', 'fatsecret', 'mynetdiary', 'yazio', 'lifesum', 'nutritionix')
+DOMAIN_KEYWORDS = ('mfp', 'myfitnesspal', 'loseit', 'cronometer', 'macrofactor', 'fatsecret', 'mynetdiary', 'yazio', 'lifesum', 'nutritionix')
 
 DOMAIN_FEATURE_KEYWORDS = (
     # Macronutrient Tracking

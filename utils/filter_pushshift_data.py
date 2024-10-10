@@ -67,10 +67,10 @@ def filter_comments(data: dict, domain_keywords: list[str], domain_feature_keywo
     """
     filtered_data = []
     for entry in data:
-        comment = entry['comment']
+        comment = entry
 
         # Check if any domain keywords and feature keywords match
-        if (contains_phrase(comment, domain_keywords) or 
+        if (contains_phrase(comment, domain_keywords) and 
             contains_phrase(comment, domain_feature_keywords)):
             filtered_data.append(entry)
 
@@ -98,7 +98,7 @@ def process_comments_from_file(file_path: str, bot_author: str='AutoModerator') 
                 if data['author'] != bot_author and 'daily threads' not in comment.lower():
                     comment_parts = split_on_newlines(comment)
                     for part in comment_parts:
-                            comments_list.append({'comment': part})
+                            comments_list.append(part)
             except json.JSONDecodeError:
                 print(f'Error decoding JSON in file: {file_path}')
                 
@@ -216,10 +216,10 @@ def decompress_zst_files(dir_path: str, output_path: str, extension: str = '.zst
                 
 def main():
     # Unzipping all files in the specified directory into the output path
-    # dir_path = 'E:\\reddit_data\\filtered_subreddits_2024_08'
-    output_path = 'E:\\reddit_data\\filtered_comments_submissions_2024_08'
+    dir_path = 'C:\\Users\\anjol\\Desktop\\reddit_data\\f_comments'
+    output_path = 'C:\\Users\\anjol\\Desktop\\reddit_data\\comments_2024_06'
     # decompress_zst_files(dir_path, output_path)
-    
+
     comments_dir = os.path.join(output_path, 'comments')
     # submissions_dir = os.path.join(output_path, 'submissions')
     
@@ -228,9 +228,10 @@ def main():
     # json_data.extend(process_all_submissions(submissions_dir))
     
     # Writing the JSON file to the output directory
-    json_path = os.path.join(output_path, 'filtered_comments.json')
-    with open(json_path, 'w') as out_file: 
-        json.dump(json_data, out_file)
+    json_path = os.path.join(output_path, 'filtered_comments_2024_06.json')
+    with open(json_path, mode='w', encoding='utf-8') as out_file: 
+        for line in json_data:
+            out_file.write(line + '\n')
 
 if __name__ == '__main__':
    main()
