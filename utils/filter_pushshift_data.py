@@ -217,8 +217,8 @@ def decompress_zst_files(dir_path: str, output_path: str, extension: str = '.zst
 def main():
     # Unzipping all files in the specified directory into the output path
     dir_path = 'C:\\Users\\anjol\\Desktop\\reddit_data\\f_comments'
-    output_path = 'C:\\Users\\anjol\\Desktop\\reddit_data\\comments_2024_06'
-    # decompress_zst_files(dir_path, output_path)
+    output_path = 'C:\\Users\\anjol\\Desktop\\reddit_data\\comments_2024_09'
+    decompress_zst_files(dir_path, output_path)
 
     comments_dir = os.path.join(output_path, 'comments')
     # submissions_dir = os.path.join(output_path, 'submissions')
@@ -228,7 +228,7 @@ def main():
     # json_data.extend(process_all_submissions(submissions_dir))
     
     # Writing the JSON file to the output directory
-    json_path = os.path.join(output_path, 'filtered_comments_2024_06.json')
+    json_path = os.path.join(output_path, 'filtered_comments_2024_09.json')
     with open(json_path, mode='w', encoding='utf-8') as out_file: 
         for line in json_data:
             out_file.write(line + '\n')

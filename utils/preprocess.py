@@ -6,8 +6,6 @@ Date Modified: October 9th, 2024
 
 This file contains all the necessary functions used to preprocess the collected data, tokenize the data into a format suitable for BERT, and encode the labels.
 """
-
-import csv
 import emoji
 import pandas as pd
 from nltk.corpus import stopwords
@@ -42,3 +40,4 @@ def clean_input(comments: list | dict) -> list:
     data = data.apply(lambda sentence: ' '.join(WordNetLemmatizer().lemmatize(word) for word in sentence.split() if word not in stop_words))
     
     return data.values
+
