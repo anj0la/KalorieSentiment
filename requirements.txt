@@ -1,0 +1,16 @@
+torch
+transformers
+label-studio
+nltk
+numpy
+torch
+pandas
+scikit-learn
+python-dotenv
+pytest
+wheel
+emoji
+setuptools
+hatchling
+hatch
+zstandard
