@@ -2,9 +2,9 @@
 File: preprocess.py
 
 Author: Anjola Aina
-Date Modified: October 9th, 2024
+Date Modified: March 13th, 2025
 
-This file contains all the necessary functions used to preprocess the collected data, tokenize the data into a format suitable for BERT, and encode the labels.
+This file contains all the necessary functions used to preprocess the collected data.
 """
 import emoji
 import pandas as pd

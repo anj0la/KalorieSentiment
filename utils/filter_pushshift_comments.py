@@ -2,15 +2,36 @@
 File: filter_pushshift_comments.py
 
 Author: Anjola Aina
-Date Modified: March 12th, 2025
+Date Modified: March 13th, 2025
 
 Description:
-    This file contains all the necessary functions used to decompress zst zipped files containing reddit data (represented as a JSON file).
+    This script extracts and filters Reddit comments from decompressed `.zst` Pushshift data files. It first processes files to extract all comments before 
+    filtering them based on specified keywords (if provided). Afterwards, it saves the extracted or filtered comments into a single JSON file. If the output
+    directory is not given, it is saved inside of the input directory.
     
-    To extract specific comments from subreddits, it is highly recommended to use the following source: https://github.com/Watchful1/PushshiftDumps/blob/master/scripts/combine_folder_multiprocess.py. 
-    This file allows one to specify via the command line the number of subreddits to extract from, along with other values such as the author.
+    For subreddit-specific extraction, use `combine_folder_multiprocess.py` from Watchful1.  
+    - Repository: https://github.com/Watchful1/PushshiftDumps  
+    - Individual file/folder extraction: Use `single_file` and `iterate_folder` scripts from Watchful1.  
+
+Features:
+    - It processes files to extract all comments.  
+    - Filters comments based on specified keywords (if provided).  
+    - Saves the extracted or filtered comments in a JSON file.  
     
-    To extract all zipped zst folders, the following source from StackOverflow was used as a reference: https://stackoverflow.com/questions/31346790/unzip-all-zipped-files-in-a-folder-to-that-same-folder-using-python-2-7-5
+Usage Examples:
+    - Extract all comments from the input directory, keeping comments with the keywords meal planning (exact and loose match) and save them to 'filtered_comments.json' in the output directory:
+      ```
+      python filter_pushshift_comments.py input_dir --output out_dir --keywords meal planning --loose_match
+      ```
+    
+    - Extract all comments from the input directory, keeping comments with the keywords customization and goals (exact match) and save them to 'filtered_comments.json' in the current directory:
+      ```
+      python filter_pushshift_comments.py input_dir --keywords customization,goals
+      ```
+Attribution:
+    - The batch decompression method for .zst files is based on this Stack Overflow post:
+    https://stackoverflow.com/questions/31346790/unzip-all-zipped-files-in-a-folder-to-that-same-folder-using-python-2-7-5
+
 """
 
 import argparse
@@ -76,7 +97,8 @@ def filter_comments(comments_list: dict, keywords: list[str], loose_match: bool 
         list[str]: The list of filtered comments.
     """
     filtered_comments = []
-    for comment in comments_list:
+    
+    for comment in tqdm(comments_list, desc='Filtering comments...'):
         # Add comment if it matches any of the supplied keywords
         for keyword in keywords:
             if matches_keyword(comment, keyword, loose_match):
@@ -123,7 +145,7 @@ def process_comments_from_folder(folder_path: str) -> list[str]:
     """
     all_comments = [] 
     for file in tqdm(os.listdir(folder_path), desc='Processing comments...'):
-        file_path = os.path.join(folder_path, file) # Create full path for the file
+        file_path = os.path.join(folder_path, file)
         comments = process_comments_from_file(file_path)
         all_comments.extend(comments)
     
@@ -144,12 +166,15 @@ def decompress_zst_files(dir_path: str, output_path: str, extension: str = '.zst
         NameError: Occurs when the dir_path does not exist.
     """
     # If the directory containing the path doesn't exist, extraction cannot occur
+    
+    dir_path = os.path.abspath(dir_path)  # Convert to absolute path
+
     if not os.path.exists(dir_path):
         raise NameError(f'{dir_path} does not exist.')
     
-    os.chdir(dir_path)
-    
-    output_dir = os.path.abspath(output_path)
+    parent_dir = os.path.dirname(dir_path)
+    output_dir = os.path.join(parent_dir, os.path.basename(output_path))
+
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     
@@ -175,44 +200,32 @@ def decompress_zst_files(dir_path: str, output_path: str, extension: str = '.zst
                 dctx = zstd.ZstdDecompressor()
                 with open(output_file_path, 'wb') as output_file:
                     dctx.copy_stream(compressed_file, output_file)
-                
-def main():
-    # Unzipping all files in the specified directory into the output path
-    dir_path = 'C:\\Users\\anjol\\Desktop\\reddit_data\\f_comments'
-    output_path = 'C:\\Users\\anjol\\Desktop\\reddit_data\\comments_2024_09'
-    decompress_zst_files(dir_path, output_path)
 
-    comments_dir = os.path.join(output_path, 'comments')
-    
-    # Extracting relevant comments
-    json_data = process_comments_from_folder(comments_dir)
-    # Filter comments
-    json_data = filter_comments(json_data, ["keyword"])
-    
-    # Writing the JSON file to the output directory
-    json_path = os.path.join(output_path, 'filtered_comments.json')
-    with open(json_path, mode='w', encoding='utf-8') as out_file: 
-        for line in json_data:
-            out_file.write(line + '\n')
+def _list_of_strings(arg: str) -> list[str]:
+    """
+    Splits a string with comma separated values into a list of strings.
 
+    Args:
+        arg (str): The string with comma separated values.
 
-def _list_of_strings(arg):
+    Returns:
+        list[str]: The strings as a list.
+    """
     return arg.split(',')
 
 if __name__ == '__main__':
     # Creating parser and adding arguments
     parser = argparse.ArgumentParser(description='This script extracts and filter comments from Pushshift dumps.\nThe input folder should contain the zst folder containing all relevant subreddits from Pushshift dumps.\nThe extracted and filtered comments will be placed in the specified output folder.\nThe --keywords option allows you to specify specific keywords that comments should contain. They should be comma separated values, such as: meal planning,calories,macro tracking\nThe --loose_match flag enables loose matching, which check if all words in the keyword appear somewhere in a comment.')
     
-    parser.add_argument('input', type=str, required=True, help='Input directory containing Pushshift data.')
-    parser.add_argument('--output', type=str, required=False, help='Output directory for filtered results (defaults to input directory).')
+    parser.add_argument('input', type=str, help='Input directory containing Pushshift data.')
+    parser.add_argument('--output', type=str, required=False, help='Output directory for extracted/filtered results (defaults to input directory).')
+    parser.add_argument('--json_file_name', type=str, required=False, help='Name of the final file containing the extracted/filtered comments.')
     parser.add_argument('--keywords', type=_list_of_strings, required=False, help='Keywords to filter out the extracted comments. Supports a comma separated list. Case insensitive.')
-    parser.add_argument('--loose_match', type=bool, action='store_true', required=False, help='Enables loose matching, which check if all words in the keyword appear somewhere in a comment.')
+    parser.add_argument('--loose_match', action='store_true', required=False, help='Enables loose matching, which check if all words in the keyword appear somewhere in a comment.')
     
-    # Parse arguments     
     args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
     
-    # Default output to input directory if not provided
-    output_dir = args.output if args.output else args.input
+    output_dir = args.output if args.output else args.input # output_dir = input_dir if not provided
     
     try:
         decompress_zst_files(args.input, output_dir)
@@ -221,13 +234,11 @@ if __name__ == '__main__':
     
     comments_dir = os.path.join(output_dir, 'comments')
         
-    # Extracting relevant comments
     json_data = process_comments_from_folder(comments_dir)
-    # Filter comments
-    json_data = filter_comments(json_data, ["keyword"])
+    if args.keywords:
+        json_data = filter_comments(json_data, args.keywords)
         
-    # Writing the JSON file to the output directory
-    json_path = os.path.join(output_dir, 'filtered_comments.json')
+    json_path = os.path.join(output_dir, 'extracted_comments.json' if not args.json_file_name else args.json_file_name + '.json')
     with open(json_path, mode='w', encoding='utf-8') as out_file: 
         for line in json_data:
             out_file.write(line + '\n')

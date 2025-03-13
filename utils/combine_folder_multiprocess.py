@@ -20,12 +20,12 @@ Features:
 Usage Examples:
     - Extract all comments from the subreddit 'wallstreetbets' and save them to 'wallstreetbets_comments.zst' in the current directory:
       ```
-      python3 combine_folder_multiprocess.py reddit/comments --value wallstreetbets
+      python combine_folder_multiprocess.py reddit/comments --value wallstreetbets
       ```
     
     - Extract all comments and submissions authored by 'Watchful1' or 'spez', saving results to the 'pushshift' folder:
       ```
-      python3 combine_folder_multiprocess.py reddit --field author --value Watchful1,spez --output pushshift
+      python combine_folder_multiprocess.py reddit --field author --value Watchful1,spez --output pushshift
       ```
 
 Attribution:
