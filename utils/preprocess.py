@@ -4,7 +4,8 @@ File: preprocess.py
 Author: Anjola Aina
 Date Modified: March 13th, 2025
 
-This file contains all the necessary functions used to preprocess the collected data.
+Description:
+    This file contains all the necessary functions used to preprocess the collected data.
 """
 import emoji
 import pandas as pd

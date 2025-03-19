@@ -96,15 +96,15 @@ def filter_comments(comments_list: dict, keywords: list[str], loose_match: bool 
     Returns:
         list[str]: The list of filtered comments.
     """
-    filtered_comments = []
+    filtered_comments = set()
     
     for comment in tqdm(comments_list, desc='Filtering comments...'):
-        # Add comment if it matches any of the supplied keywords
         for keyword in keywords:
             if matches_keyword(comment, keyword, loose_match):
-                filtered_comments.append(comment)
-        
-    return filtered_comments
+                filtered_comments.add(comment)
+    
+    return list(filtered_comments)
+
 
 def process_comments_from_file(file_path: str, bot_author: str='AutoModerator') -> list[str]:
     """
@@ -236,7 +236,9 @@ if __name__ == '__main__':
         
     json_data = process_comments_from_folder(comments_dir)
     if args.keywords:
-        json_data = filter_comments(json_data, args.keywords)
+        json_data = filter_comments(json_data, args.keywords, args.loose_match)
+        
+    json_data = list(set(json_data))  # Remove duplicates before saving
         
     json_path = os.path.join(output_dir, 'extracted_comments.json' if not args.json_file_name else args.json_file_name + '.json')
     with open(json_path, mode='w', encoding='utf-8') as out_file: 
